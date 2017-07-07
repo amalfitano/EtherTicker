@@ -12,8 +12,7 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("testing github upload")
-        print("figuring out upload an icon and iPhone testing")
+
         // Do any additional setup after loading the view, typically from a nib.
     }
 
