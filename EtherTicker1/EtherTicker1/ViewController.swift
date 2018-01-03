@@ -11,35 +11,37 @@ import Alamofire
 
 class ViewController: UIViewController {
 
+    @IBOutlet weak var EtherPrice: UILabel!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         loadData()
-
-        // Do any additional setup after loading the view, typically from a nib.
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
     
     func loadData(){
+        EtherPrice.text = "fetching..."
         Alamofire.request("https://api.gdax.com/products/ETH-USD/book").responseJSON { response in
-            print("Request: \(String(describing: response.request))")   // original url request
-            print("Response: \(String(describing: response.response))") // http url response
-            print("Result: \(response.result)")                         // response serialization result
-            
-            if let json = response.result.value {
-                print("JSON: \(json)") // serialized json response
-            }
-            
-            if let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
-                print("Data: \(utf8Text)") // original server data as UTF8 string
+            if let data = response.data{
+                self.dataDidFetched(data: data)
             }
         }
+    }
+    
+    func dataDidFetched(data: Data){
+        do{
+            if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]{
+                if let asksArray = json["asks"] as?[Any]{
+                    if let priceArray = asksArray.first as? [Any]{
+                        let price = priceArray.first as? String
+                        EtherPrice.text = "$" + price!
+                    }}}
+        }catch{}
         
     }
-
-
+    
+    @IBAction func fetchData(_ sender: UIButton) {
+        loadData()
+    }
+    
 }
 
